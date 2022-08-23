@@ -1,110 +1,169 @@
-var garden,rabbit,apple,orangeL,redL;
-var gardenImg,rabbitImg,carrotImg,orangeImg,redImg;
+var path,boy,cash,diamonds,jewelry,sword;
+var pathImg,boyImg,cashImg,diamondsImg,jewelryImg,swordImg;
+var treasureCollection = 0;
+var cashG,diamondsG,jewelryG,swordGroup;
 
+//Game States
+var PLAY=1;
+var END=0;
+var gameState=1;
 
 function preload(){
-  gardenImg = loadImage("garden.png");
-  rabbitImg = loadImage("rabbit.png");
-  appleImg = loadImage("apple.png");
-  orangeImg = loadImage("orangeLeaf.png");
-  redImg = loadImage("redImage.png");
+  pathImg = loadImage("Road.png");
+  boyImg = loadAnimation("Runner-1.png","Runner-2.png");
+  cashImg = loadImage("cash.png");
+  diamondsImg = loadImage("diamonds.png");
+  jewelryImg = loadImage("jwell.png");
+  swordImg = loadImage("sword.png");
+  endImg =loadAnimation("gameOver.png");
 }
-
 
 function setup(){
   
-  createCanvas(400,400);
+  createCanvas(400,600);
 // Moving background
-garden=createSprite(200,200);
-garden.addImage(gardenImg);
+path=createSprite(200,200);
+path.addImage(pathImg);
+path.velocityY = 4;
 
 
 //creating boy running
-rabbit = createSprite(160,340,20,20);
-rabbit.scale =0.09;
-rabbit.addImage(rabbitImg);
+boy = createSprite(70,580,20,20);
+boy.addAnimation("SahilRunning",boyImg);
+boy.scale=0.08;
+  
+  
+cashG=new Group();
+diamondsG=new Group();
+jewelryG=new Group();
+swordGroup=new Group();
+
 }
 
 function draw() {
+
+  if(gameState===PLAY){
   background(0);
-  
-  // boy moving on Xaxis with mouse'
-  rabbit.x = World.mouseX;
+  boy.x = World.mouseX;
   
   edges= createEdgeSprites();
-  rabbit.collide(edges);
+  boy.collide(edges);
   
-   drawSprites();
-   
+  //code to reset the background
+  if(path.y > 400 ){
+    path.y = height/2;
+  }
   
-// var select_sprites = Math(random(1,3));
+    createCash();
+    createDiamonds();
+    createjewelry();
+    createSword();
 
-// var select_sprites = Math.random(random(1,3));
-
-// var select_sprites = Math.round(1,3);
-
- var select_sprites = Math.round(random(1,3));
-
-  
-  /* if (frameCount % 50 == 0) {
-     if (select_sprites == 1) {
-       createApples();
-     } else if (select_sprites == 2) {
-       createOrange();
-     }else {
-      createRed();
+    if (cashG.isTouching(boy)) {
+      cashG.destroyEach();
+      treasureCollection=treasureCollection+50;
     }
-   }*/
-   if (frameCount % 80 == 0) {
-     if (select_sprites == 1) {
-       createApples();
-     } else if (select_sprites == 2) {
-       createOrange();
-     }
+    else if (diamondsG.isTouching(boy)) {
+      diamondsG.destroyEach();
+      treasureCollection=treasureCollection+100;
+      
+    }else if(jewelryG.isTouching(boy)) {
+      jewelryG.destroyEach();
+
+      // treasureCollection=+ 150;
+      // treasureCollection= 150;
+      // treasureCollection= treasureCollection - 150;
+       treasureCollection= treasureCollection + 150;
+      
+    }else{
+      if(swordGroup.isTouching(boy)) {
+        gameState=END;
+        
+        // boy.addAnimation(endImg);
+         boy.addAnimation("SahilRunning",endImg);
+        // boy.addAnimation("SahilRunning");
+        // boy.addAnimation(SahilRunning,endImg);
+
+        boy.x=200;
+        boy.y=300;
+        boy.scale=0.6;
+        
+        // cashG.destroyEach;
+        // diamondsG.destroyEach;
+        // jewelryG.destroyEach;
+        // swordGroup.destroyEach;
+
+        //cashG.destroy();
+        // diamondsG.destroy();
+        // jewelryG.destroy();
+        // swordGroup.destroy();
+        
+         cashG.destroyEach();
+         diamondsG.destroyEach();
+         jewelryG.destroyEach();
+         swordGroup.destroyEach();
+        
+        // cashGdestroyEach();
+        // diamondsGdestroyEach();
+        // jewelryGdestroyEach();
+        // swordGroupdestroyEach();
+        
+        cashG.setVelocityYEach(0);
+        diamondsG.setVelocityYEach(0);
+        jewelryG.setVelocityYEach(0);
+        swordGroup.setVelocityYEach(0);
+     
+    }
+  }
+  
+  drawSprites();
+  textSize(20);
+  fill(255);
+  text("Treasure: "+ treasureCollection,10,30);
   }
 
-  /*if (frameCount / 80 == 0) {
-     if (select_sprites == 1) {
-       createApples();
-     } else if (select_sprites == 2) {
-       createOrange();
-     }else {
-       createRed();
-    }
-   }*/
-
- /* if (frameCount % 80 == 0) {
-    if (select_sprites == 1) {
-     createApples();
-    } else if (select_sprites == 2) {
-      createOrange();
-    }else {
-      createRed();
-    }
-  }*/
 }
 
-function createApples() {
-apple = createSprite(random(50, 350),40, 10, 10);
-apple.addImage(appleImg);
-apple.scale=0.07;
-apple.velocityY = 2;
-apple.lifetime = 150;
-  
+function createCash() {
+  if (World.frameCount % 200 == 0) {
+  var cash = createSprite(Math.round(random(50, 350),40, 10, 10));
+  cash.addImage(cashImg);
+  cash.scale=0.12;
+  cash.velocityY = 3;
+  cash.lifetime = 150;
+  cashG.add(cash);
+  }
 }
 
-function createOrange() {
-orangeL = createSprite(random(50, 350),40, 10, 10);
-orangeL.addImage(orangeImg);
-orangeL.scale=0.08;
-orangeL.velocityY = 2.5;
-orangeL.lifetime = 150;
+function createDiamonds() {
+  if (World.frameCount % 320 == 0) {
+  var diamonds = createSprite(Math.round(random(50, 350),40, 10, 10));
+  diamonds.addImage(diamondsImg);
+  diamonds.scale=0.03;
+  diamonds.velocityY = 3;
+  diamonds.lifetime = 150;
+  diamondsG.add(diamonds);
+}
 }
 
-function createRed() {
-redL = createSprite(random(50, 350),40, 10, 10);
-redL.addImage(redImg);
-redL.scale=0.06;
-  redL.velocityY = 3;
-  redL.lifetime = 150;
+function createjewelry() {
+  if (World.frameCount % 410 == 0) {
+  var jewelry = createSprite(Math.round(random(50, 350),40, 10, 10));
+  jewelry.addImage(jewelryImg);
+  jewelry.scale=0.13;
+  jewelry.velocityY = 3;
+  jewelry.lifetime = 150;
+  jewelryG.add(jewelry);
+  }
+}
+
+function createSword(){
+  if (World.frameCount % 530 == 0) {
+  var sword = createSprite(Math.round(random(50, 350),40, 10, 10));
+  sword.addImage(swordImg);
+  sword.scale=0.1;
+  sword.velocityY = 3;
+  sword.lifetime = 150;
+  swordGroup.add(sword);
+  }
 }
